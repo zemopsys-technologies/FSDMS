@@ -78,7 +78,7 @@
 				<div class="card">
     				<img class="card-img-top" src="<?php if(!empty($products->image)){echo base_url().$products->image;}else{echo "https://foodtango.com/img/ui/noimage.png";} ?>" alt="Card image" style="width:100%">
     				<div class="card-body">
-      				<h4 class="card-title" align="center"><?php echo $products->name; ?></h4>
+      				<h4 class="card-title" align="center"><a href="<?php echo base_url()."home/product/".$products->sku; ?>"> <span> <?php echo $products->name; ?> </span> </a> </h4>
       				<input type="hidden" name="product_name" value="<?php echo $products->name; ?>">
       				<input type="hidden" name="product_sku" value="<?php echo $products->sku; ?>">
       				<table>
