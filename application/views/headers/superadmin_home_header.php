@@ -230,8 +230,9 @@
                     <span class="menu-collapsed">View Employee</span>
                 </a>
                 <a href="<?php echo base_url()."superadmin/employee_approve" ?>" class="list-group-item list-group-item-action bg-dark text-white">
-                    <span class="menu-collapsed">Employee Approval</span>
+                    <span class="menu-collapsed">Kitchen Employee Approval</span>
                 </a>
+                
                 <a href="<?php echo base_url()."superadmin/delivery_manage" ?>" class="list-group-item list-group-item-action bg-dark text-white">
                     <span class="menu-collapsed">Delivery Order</span>
                 </a>
@@ -255,14 +256,28 @@
               </a>
             </div>    
 
-            <a href="#" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+           
+              <a href="#submenu5" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
                     <div class="d-flex w-100 justify-content-start align-items-center">
-                         <li class="fas fa-fw mr-3 fa-truck text-light"></li> 
-                         <span class="menu-collapsed text-light">Delivery Hub</span>
-
-                         <span class="submenu-icon ml-auto"></span>
+                         <span class="fas fa-fw mr-3 fa-truck text-light"></span>
+                          <span class="menu-collapsed text-light">Delivery Hub</span>
+                         <span class="fa fa-caret-down ml-auto text-light"></span>
                     </div>
                </a>
+            <!-- Submenu content -->
+            <div id='submenu5' class="collapse sidebar-submenu">
+                <a href="<?php echo base_url()."superadmin/create_deliveryhub" ?>" class="list-group-item list-group-item-action bg-dark text-white">
+                    <span class="menu-collapsed"> Create Delivery Hub</span>
+                </a>
+                <a href="<?php echo base_url()."superadmin/create_deliveryhub_admin" ?>" class="list-group-item list-group-item-action bg-dark text-white">
+                <span class="menu-collapsed">Delivery Admin</span>
+                </a>
+                 <a href="<?php echo base_url()."superadmin/delivery_employee_approve" ?>" class="list-group-item list-group-item-action bg-dark text-white">
+                    <span class="menu-collapsed">Delivery Executives Approval</span>
+                </a>
+                  
+            </div>
+
                 </ul>
       </div>
     </div>
