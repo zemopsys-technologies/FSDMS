@@ -5303,7 +5303,7 @@ public function create_deliveryhub_admin($error = NULL)
           if($newpwd == $conpwd)
           {
             $updated = $this->update_model->update_delivery($email,$newpwd);
-             redirect(base_url()."login/");
+             redirect(base_url()."deliveryhub/");
           }
         
         }
