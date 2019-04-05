@@ -77,8 +77,8 @@ LEFT JOIN
 custom_product_master AS cm ON pm.product_sku = cm.product_sku
 LEFT JOIN
 category_master AS cmm ON pm.product_category = cmm.id
-    LEFT JOIN
-  product_image AS img ON img.product_sku = cm.product_sku
+   LEFT JOIN
+ product_image AS img ON img.product_sku = pm.product_sku
 WHERE
 1";
 $query = $this->db->query($sql);
@@ -584,12 +584,7 @@ return $query;
          return $query;
      }
 
-     public function select_del_employee()
-      {
-         $query = $this->db->query("SELECT * FROM delivery_employee");
-      return $query;
-      }
-
+    
     //20-03-19
     function select_del($id)
     {
@@ -681,7 +676,7 @@ return $query;
           return $query;
         }
       }
-
+    
       public function get_company_branch_address($user_type,$user_id)
       {
        $sql = "SELECT bd.branch_address1 AS branch_address1, bd.branch_address2 AS branch_address2, bd.branch_address3 AS branch_address3,bd.branch_city AS branch_city,bd.branch_state AS branch_state
@@ -694,14 +689,76 @@ return $query;
         $query = $this->db->query($sql);
         return $query;
       }
+  /**
+    * Author : VEDAVITH RAVULA
+    * Date : 04-04-2019
+    */
+      public function select_product_on_sku($get_sku)
+   {
+   $sql ="SELECT
+    pm.id AS id,
+    img.image1 AS image1,
+    img.image2 AS image2,
+    img.image3 AS image3,
+    img.image4 AS image4,
+    img.image5 AS image5,
+    pm.product_name AS name,
+    cmm.category AS category_name,
+    pm.product_category AS category_id,
+    pm.meal_type AS meal,
+    pm.product_sku AS sku,
+    pm.product_price AS price,
+    pm.product_quantity AS quantity,
+    pm.is_customizable AS custom,
+    cm.customizable_product AS custom_product,
+    cm.customizable_sku AS custom_sku,
+    cm.custom_product_price AS custom_product_price
+FROM
+    product_master AS pm
+        LEFT JOIN
+    custom_product_master AS cm ON pm.product_sku = cm.product_sku
+        LEFT JOIN
+    category_master AS cmm ON pm.product_category = cmm.id
+        LEFT JOIN
+    product_image AS img ON img.product_sku = pm.product_sku
+WHERE
+    pm.product_sku = '".$get_sku."'";
+    $query = $this->db->query($sql);
+    return $query;
+   }
 
-      //2-04-19(divya)
+
+    //2-04-19(divya)
+    public function select_del_employee()
+      {
+         $query = $this->db->query("SELECT * FROM delivery_employee where approve ='1'");
+      return $query;
+      }
 
     public function get_del_emp_approve()
     {
       $query = $this->db->query("SELECT * FROM delivery_employee  where approve = 0 AND status=0");
       return $query;
     }
+    //04-04-2019 (divya)
+    public function get_deliveryhub_data()
+    {
+      $query = $this->db->query("SELECT * FROM deliveryhub_register");
+      return $query;
+    }
+     //04-04-19
+    public function select_delhub_id($id)
+    {
+      $query = $this->db->query("SELECT * FROM deliveryhub_register WHERE id='$id'");
+      return $query;
+    }
+    //05-04-19
+    public function get_deliveryhub_admin()
+    {
+      $query = $this->db->query("SELECT dr.`delhub_name`,da.* FROM deliveryhub_register as dr LEFT JOIN `deliveryhub_admin` as da ON dr.`delhub_id` = da.`delhub_id` where da.`status`='1' ");
+      return $query;
+    }
+    
 
 
 }

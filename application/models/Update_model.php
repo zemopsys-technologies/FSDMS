@@ -186,6 +186,7 @@ class Update_model extends CI_Model
           return $affected_rows =  $this->db->affected_rows();
     }
 
+
     //20-2-19(divya)
 	public function update_corp_branch($id,$data)
     {
@@ -417,7 +418,13 @@ class Update_model extends CI_Model
         return $query = $this->db->query($sql);
 
     }
-
+    //2-04-19
+     public function update_del_emp_status($id,$data)
+    {
+      $this->db->where('emp_id',$id);
+       $this->db->update('delivery_employee',$data);
+       return $affected_rows =  $this->db->affected_rows();
+    }
 
        /**
       *  AUTHOR  :   Vedavith Ravula
@@ -489,7 +496,36 @@ class Update_model extends CI_Model
     $this->db->update('cart_confirmation');
     return $affected_rows = $this->db->affected_rows();
    }
+  //1-04-19(Divya)
+   public function update_emp_deliveryhub($id,$data)
+    {
+        $this->db->where('id',$id);
+          $this->db->update('delivery_employee',$data);
+          return $affected_rows =  $this->db->affected_rows();
+    }
+    public function update_deliveryhub($id,$data)
+    {
+      $this->db->where('id',$id);
+      $this->db->update('deliveryhub_register',$data);
+      return $affected_rows = $this->db->affected_rows();
+   }
+   //05-04-19
+   public function update_dlhub_admin($id,$data)
+    {
+      $this->db->where('id',$id);
+      $this->db->update('deliveryhub_admin',$data);
+      return $affected_rows = $this->db->affected_rows();
+   }
+   //05-042-19(divya)
+   public function update_delivery($email,$pwd)
+  {
+    $this->db->set('status', '1', FALSE);
+    $this->db->set('password', $pwd);
+    $this->db->where('email_id', $email);
+    $this->db->update('deliveryhub_admin');
 
+    return $get_affected_rows = $this->db->affected_rows();
+  }
 }
 
 

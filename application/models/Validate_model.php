@@ -412,13 +412,14 @@ class Validate_model extends CI_Model
         //13-3-19
         public function get_delivery_user($kitchen_data)
         {
-            $sql = "SELECT *, COUNT(*) AS count FROM delivery_admin WHERE (email='".$kitchen_data['email_id']."' OR user_name = '".$kitchen_data['email_id']."') AND password = '".$kitchen_data['password']."'";
+            $sql = "SELECT *, COUNT(*) AS count FROM deliveryhub_admin WHERE (email_id='".$kitchen_data['email_id']."' OR user_name = '".$kitchen_data['email_id']."') AND password = '".$kitchen_data['password']."'";
             $query = $this->db->query($sql);
             
-            $data['user_id'] = $query->row()->id;
+            $data['admin_id'] = $query->row()->id;
             // $data['kitchen_id'] = $query->row()->kitchen_id;
-            $data['delivery_email_id'] = $query->row()->email;
+            $data['delivery_email_id'] = $query->row()->email_id;
             $data['delivery_user_name'] = $query->row()->user_name;
+            $data['delivery_table'] = "deliveryhub_admin";
             $data['count'] = $query->row()->count;
             
             return $data;
@@ -453,6 +454,18 @@ class Validate_model extends CI_Model
             
             return $data;
             //return $query->row()->count;
+        }
+        //04-04-19(Divya)
+        public function get_deliveryhub($value)
+        {
+            $query = $this->db->query("SELECT COUNT(*) AS count FROM deliveryhub_register WHERE delhub_id='".$value."'");
+            return $query->row()->count;
+        }
+         //05-04-19(Divya)
+        public function get_dlhub_admin($email,$user)
+        {
+            $query = $this->db->query("SELECT COUNT(*) AS count FROM deliveryhub_admin WHERE email_id='".$email."' OR user_name='".$user."'");
+            return $query->row()->count;
         }
 
 }

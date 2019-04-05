@@ -239,12 +239,24 @@ class Delete_model extends CI_Model
     //20-3-19(Divya)
 	public function delete_del_kitchen($get_id)
     {
-        //$this->db->where('id', $get_id);
         $this->db->where('order_id', $get_id);
         $this->db->delete('delivery_kitchen_order');
         return $affected = $this->db->affected_rows();
     }
-    
+    //04-04-19(Divya)
+	public function delete_del_hub($get_id)
+    {
+        $this->db->where('id', $get_id);
+        $this->db->delete('deliveryhub_register');
+        return $affected = $this->db->affected_rows();
+    }
+    //04-04-19(Divya)
+	public function delete_dlhub_admin($get_id)
+    {
+        $this->db->where('id', $get_id);
+        $this->db->delete('deliveryhub_admin');
+        return $affected = $this->db->affected_rows();
+    }
 		/**
 	 	* Author : Vedavith Ravula
 	 	* Date   : 19032019

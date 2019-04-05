@@ -309,6 +309,18 @@
             return $affected = $this->db->affected_rows();
         }
 
+        //04-04-2019 (divya)
+        public function insert_deliveryhub($data)
+        {
+            $this->db->insert('deliveryhub_register',$data);
+            return $affected = $this->db->affected_rows();
+        }
+        //05-04-2019 (divya)
+        public function insert_dlhub_admin($data)
+        {
+            $this->db->insert('deliveryhub_admin',$data);
+            return $affected = $this->db->affected_rows();
+        }
 
     }
 
