@@ -1057,6 +1057,20 @@ class Superadmin extends CI_Controller
       $this->load->view('headers/footer');
       
       }
+       if($get_url_value == 5)
+      {
+      $get_encoded_email = $this->uri->segment(4);
+      $get_encoded_pwd = $this->uri->segment(5);
+       $data["email_address"] = base64_decode($get_encoded_email);
+       $data["pwd"] = base64_decode($get_encoded_pwd);
+       $data["deliveryhub"] = "deliveryhub";
+      //$data['kitchen_admin_data'] = $this->select_model->select_kitchen_admin();
+       $this->load->view('headers/kitchenheader',$data);
+      //$this->load->view('products/create_pwd',$data);
+      $this->load->view('products/pwd_create',$data);
+      $this->load->view('headers/footer');
+      
+      }
     }
 
 
@@ -4814,6 +4828,38 @@ public function dc_data()
         }
     }
 //=========================================================================
+  //======================Deliveryhub employee approve=====================
+    //2-04-2019(Divya)
+    public function delivery_employee_approve()
+    {
+     if($this->session->has_userdata('admin_id'))
+      {
+        $data['user_data'] = $this->select_model->select_user($this->backend_table,$this->admin_id);
+        $data['get_role'] = $this->select_model->get_role_master();
+        $data['kitchen_user_employee'] = $this->select_model->get_del_emp_approve();
+        $this->load->view('headers/superadmin_home_header',$data);
+        $this->load->view('deliveryhub/delivery_emp_approve',$data);
+        $this->load->view('headers/footer');
+      }
+      else
+      {
+        $this->error_403();
+      }
+    }  
+    //2-04-2019(Divya)
+    public function approved_del_employee()
+    {
+      $data = array(
+          "approve" => '1'
+      );
+        $get_affected_rows = $this->update_model->update_del_emp_status($this->uri->segment(3),$data);
+
+        if($get_affected_rows)
+        {
+           redirect(base_url()."superadmin/delivery_employee_approve",'refresh');
+        }
+    }
+  //=======================================================================
   //=======================Attendance(mounika)============================
 public function ajaxCallKitchenAttendance()
    {
@@ -4906,6 +4952,365 @@ public function kitchen_emp_attendance()
   }
 
 //=================================================================
+//-------------------------CREATE Delivery Hub --------------------
+    public function create_deliveryhub($error = NULL)
+    {
+      if($this->session->has_userdata('admin_id'))
+          {
+            $data['user_data'] = $this->select_model->select_user($this->backend_table,$this->admin_id);
+
+            if($error != NULL)
+            {
+              $data['error'] = "DELHUB";
+            }
+             $this->load->view('headers/superadmin_home_header',$data);
+               $this->load->view('deliveryhub/new_delivery_hub',$data);
+               $this->load->view('headers/footer');
+          }
+          else
+          {
+                $this->error_403();
+          }
+    }
+    public function insert_deliveryhub_data()
+    {
+      $this->form_validation->set_rules('delhub_id','delhub_id','required');
+      $this->form_validation->set_rules('delhub_name','delhub_name','required');
+       $this->form_validation->set_rules('delhub_address1','delhub_address1','required');
+       $this->form_validation->set_rules('delhub_address2','delhub_address2','required');
+       $this->form_validation->set_rules('delhub_address3','delhub_address3','required');
+      $this->form_validation->set_rules('state','state','required');
+      $this->form_validation->set_rules('city','city','required');
+      $this->form_validation->set_rules('zipcode','zipcode','required');
+       if($this->form_validation->run())
+       {
+      
+        $data = array(
+          "delhub_id" => $this->input->post("delhub_id"),
+          "delhub_name" => $this->input->post("delhub_name"),
+          "dh_address1" => $this->input->post("delhub_address1"),
+          "dh_address2" => $this->input->post("delhub_address2"),
+          "dh_address3" => $this->input->post("delhub_address3"),
+                "state" => $this->input->post("state"),
+                "city"  => $this->input->post("city"),
+              "zipcode" => $this->input->post("zipcode")
+           );
+      
+         $get_count = $this->validate_model->get_deliveryhub($data['delhub_id']);
+
+          if(!($get_count))
+          {
+            $get_affected_rows = $this->insert_model->insert_deliveryhub($data);
+            if($get_affected_rows)
+            {
+                echo "<script> alert('Created DeliveryHub '); </script>";
+                $this->manage_deliveryhub();
+            }
+          }
+          else
+          {
+            //$this->create_category("vae");
+            echo "<script> alert('Error(DELHUB): Value Already Exists.'); </script>";
+              $this->create_deliveryhub("DELHUB");
+                // $this->create_category();
+          }
+       }
+       else
+       {
+        $this->create_deliveryhub();
+       }
+
+    }
+     public function manage_deliveryhub()
+    {
+      if($this->session->has_userdata('admin_id'))
+          {
+            $data['user_data'] = $this->select_model->select_user($this->backend_table,$this->admin_id);
+            $data['del_data'] = $this->select_model->get_deliveryhub_data();
+             $this->load->view('headers/superadmin_home_header',$data);
+               $this->load->view('deliveryhub/new_delivery_hub',$data);
+               $this->load->view('headers/footer');
+          }
+          else
+          {
+                $this->error_403();
+          }
+    }
+    public function edit_deliveryhub()
+    {
+      if($this->session->has_userdata('admin_id'))
+          {
+            $data['user_data'] = $this->select_model->select_user($this->backend_table,$this->admin_id);
+            $data['delhub_reg_id'] = $this->select_model->select_delhub_id($this->uri->segment(3));
+             $this->load->view('headers/superadmin_home_header',$data);
+               $this->load->view('deliveryhub/new_delivery_hub',$data);
+               $this->load->view('headers/footer');
+          }
+          else
+          {
+                $this->error_403();
+          }
+    }
+    public function edit_deliveryhub_data()
+    {
+      $this->form_validation->set_rules('delhub_id','delhub_id','required');
+      $this->form_validation->set_rules('delhub_name','delhub_name','required');
+       $this->form_validation->set_rules('delhub_address1','delhub_address1','required');
+       $this->form_validation->set_rules('delhub_address2','delhub_address2','required');
+       $this->form_validation->set_rules('delhub_address3','delhub_address3','required');
+      $this->form_validation->set_rules('state','state','required');
+      $this->form_validation->set_rules('city','city','required');
+      $this->form_validation->set_rules('zipcode','zipcode','required');
+       if($this->form_validation->run())
+       {
+      
+        $data = array(
+          "delhub_id" => $this->input->post("delhub_id"),
+          "delhub_name" => $this->input->post("delhub_name"),
+          "dh_address1" => $this->input->post("delhub_address1"),
+          "dh_address2" => $this->input->post("delhub_address2"),
+          "dh_address3" => $this->input->post("delhub_address3"),
+                "state" => $this->input->post("state"),
+                "city"  => $this->input->post("city"),
+              "zipcode" => $this->input->post("zipcode")
+           );
+         $id = $this->input->post('hid_id');
+        
+            $get_affected_rows = $this->update_model->update_deliveryhub($id,$data);
+           if($get_affected_rows >= 0)
+            {
+                echo "<script> alert('Updated Successfully'); </script>";
+                echo "<script>window.location.href='".base_url()."superadmin/manage_deliveryhub';</script>";
+              }
+        }
+         
+      
+       else
+       {
+        if($this->session->has_userdata('admin_id'))
+          {
+            $data['user_data'] = $this->select_model->select_user($this->backend_table,$this->admin_id);
+            $data['delhub_reg_id'] = $this->select_model->select_delhub_id($this->input->post('hid_id'));
+             $this->load->view('headers/superadmin_home_header',$data);
+               $this->load->view('deliveryhub/new_delivery_hub',$data);
+               $this->load->view('headers/footer');
+          }
+          else
+          {
+                $this->error_403();
+          }
+       }
+
+    }
+     //delete deliveryhub
+     public function delete_deliveryhub()
+      {
+            $get_affected_rows = $this->delete_model->delete_del_hub($this->uri->segment(3));
+            
+            if($get_affected_rows)
+            {
+               redirect(base_url()."superadmin/manage_deliveryhub",'refresh');
+            }
+        }
+//-------------------------END CREATE Delivery Hub -------------------------
+   
+//--------------------------Create Delivery Admin--------------------------
+//05-04-2019
+public function create_deliveryhub_admin($error = NULL)
+    {
+      if($this->session->has_userdata('admin_id'))
+          {
+            $data['user_data'] = $this->select_model->select_user($this->backend_table,$this->admin_id);
+            $data['get_delhub'] = $this->select_model->get_deliveryhub_data();
+            if($error != NULL)
+            {
+              $data['error'] = "DHADMIN";
+            }
+             $this->load->view('headers/superadmin_home_header',$data);
+               $this->load->view('deliveryhub/deliveryhub_admin',$data);
+               $this->load->view('headers/footer');
+          }
+          else
+          {
+                $this->error_403();
+          }
+    }
+ public function insert_dlhub_admin_data()
+    {
+      $this->form_validation->set_rules('delhub_id','delhub_id','required');
+      $this->form_validation->set_rules('first_name','first_name','required');
+       $this->form_validation->set_rules('last_name','last_name','required');
+       $this->form_validation->set_rules('email','email','required');
+       $this->form_validation->set_rules('user_name','user_name','required');
+      
+       if($this->form_validation->run())
+       {
+          $data = array(
+          "delhub_id" => $this->input->post("delhub_id"),
+          "first_name" => $this->input->post("first_name"),
+          "last_name" => $this->input->post("last_name"),
+          "email_id" => $this->input->post("email"),
+          "user_name" => $this->input->post("user_name"),
+          "password"  => $this->input->post("password")  
+           );
+      if($this->input->post('insert'))
+         {
+         $get_count = $this->validate_model->get_dlhub_admin($data['email_id'],$data['user_name']);
+
+          if($get_count == 0)
+          {
+            $get_affected_rows = $this->insert_model->insert_dlhub_admin($data);
+            if($get_affected_rows)
+            {
+              
+
+                $this->email->from('zenopsysevolve@gmail.com', 'FSDMS Appliacation');
+                $this->email->to((string)$data['email_id']);
+                $this->email->subject('Confirm Registration');
+                $message = "<html>";
+                $message .= "<body>";
+                $message .= "<p> Please, click on the link to confirm the registration on FSDMS </p>";
+                $message .= "<p> <b>Email Id : ".$data['email_id']."</b></p>";
+                $message .= "<p> <b>User Name : ".$data['user_name']."</b></p>";
+                $message .= "<p> <b> Password : ".$data['password']."</b></p>";
+                $message .= "<p><a href='".base_url()."superadmin/confirmation/5/".base64_encode($data['email_id'])."/".base64_encode($data['password'])."'> Click to Confirm  </a></p>";
+                $message .= "</body>";
+                $message .= "</html>";
+                $this->email->message($message);
+                $this->email->send();
+
+                echo $this->email->print_debugger();
+                  //redirect(base_url()."superadmin/confirmation/1");
+              }
+                echo "<script> alert('Created DeliveryHub Admin '); </script>";
+                $this->manage_deliveryhub_admin();
+           
+          }
+          else
+          {
+           
+            echo "<script> alert('Error(DHADMIN): Value Already Exists.'); </script>";
+              $this->create_deliveryhub_admin("DHADMIN");
+              
+          }
+        }
+        }
+        else
+        {
+          $this->create_deliveryhub_admin();
+        }
+      
+
+    }
+     public function manage_deliveryhub_admin()
+    {
+      if($this->session->has_userdata('admin_id'))
+          {
+            $data['user_data'] = $this->select_model->select_user($this->backend_table,$this->admin_id);
+            $data['dlhub_data'] = $this->select_model->get_deliveryhub_admin();
+             $this->load->view('headers/superadmin_home_header',$data);
+               $this->load->view('deliveryhub/deliveryhub_admin',$data);
+               $this->load->view('headers/footer');
+          }
+          else
+          {
+                $this->error_403();
+          }
+    }
+   public function edit_deliveryhub_admin()
+    {
+
+      if($this->session->has_userdata('admin_id'))
+          {
+            $data['user_data'] = $this->select_model->select_user($this->backend_table,$this->admin_id);
+             $data['get_delhub'] = $this->select_model->get_deliveryhub_data();
+            $data['delhub_admin_id'] = $this->select_model->select_user('deliveryhub_admin',$this->uri->segment(3));
+             $this->load->view('headers/superadmin_home_header',$data);
+               $this->load->view('deliveryhub/deliveryhub_admin',$data);
+               $this->load->view('headers/footer');
+          }
+          else
+          {
+                $this->error_403();
+          }
+    }
+    public function edit_delhub_admin_data()
+    {
+       $this->form_validation->set_rules('delhub_id','delhub_id','required');
+      $this->form_validation->set_rules('first_name','first_name','required');
+       $this->form_validation->set_rules('last_name','last_name','required');
+       $this->form_validation->set_rules('email','email','required');
+       $this->form_validation->set_rules('user_name','user_name','required');
+      
+       if($this->form_validation->run())
+       {
+         $data = array(
+            "delhub_id" => $this->input->post("delhub_id"),
+            "first_name" => $this->input->post("first_name"),
+            "last_name" => $this->input->post("last_name"),
+            "email_id" => $this->input->post("email"),
+            "user_name" => $this->input->post("user_name")
+             );
+           $id = $this->input->post('hid_id');
+          
+              $get_affected_rows = $this->update_model->update_dlhub_admin($id,$data);
+             if($get_affected_rows >= 0)
+              {
+                  echo "<script> alert('Updated Successfully'); </script>";
+                  echo "<script>window.location.href='".base_url()."superadmin/manage_deliveryhub_admin';</script>";
+              }
+          }
+          else
+          {
+               if($this->session->has_userdata('admin_id'))
+              {
+                $data['user_data'] = $this->select_model->select_user($this->backend_table,$this->admin_id);
+                 $data['get_delhub'] = $this->select_model->get_deliveryhub_data();
+                $data['delhub_admin_id'] = $this->select_model->select_user('deliveryhub_admin',$this->input->post("hid_id"));
+                 $this->load->view('headers/superadmin_home_header',$data);
+                   $this->load->view('deliveryhub/deliveryhub_admin',$data);
+                   $this->load->view('headers/footer');
+              }
+              else
+              {
+                    $this->error_403();
+              }
+          }
+    
+    }
+
+     public function delete_dlhub_admin()
+      {
+            $get_affected_rows = $this->delete_model->delete_dlhub_admin($this->uri->segment(3));
+            
+            if($get_affected_rows)
+            {
+               redirect(base_url()."superadmin/manage_deliveryhub_admin",'refresh');
+            }
+        }
+    //04-4-19
+    function delivery_password()
+    {
+        $oldpwd = $this->input->post("con_password");
+        $email = $this->input->post("email");
+        $olduserpwd = $this->input->post("password");
+        $newpwd = $this->input->post("new_pwd");
+        $conpwd = $this->input->post("re_pwd");
+        //$status = "1";
+        if($oldpwd == $olduserpwd)
+         {
+
+          if($newpwd == $conpwd)
+          {
+            $updated = $this->update_model->update_delivery($email,$newpwd);
+             redirect(base_url()."login/");
+          }
+        
+        }
+    }
+//---------------------------End Delivery Admin----------------------------
+
+
 //=========================Notification =========================
   public function create_notification()
   {
